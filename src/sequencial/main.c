@@ -8,6 +8,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
     memset(machines, 0, sizeof(machines));
     memset(job_completion_times, 0, sizeof(job_completion_times));
 
+    clock_t time_before = clock();
     for (int i = 0; i < number_of_jobs; i++){
         for (int j = 0; j < jobs[i].total_operations; j++){
             int machine_id = jobs[i].operations[j].machine_number;
@@ -20,7 +21,10 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
             printf("Job %d (Machine %d): Start time = %d, End time = %d\n", jobs[i].job_number, machine_id, start_time, end_time);
         }
     }
+    clock_t time_after = clock();
+    double time = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
     printf("Makespan: %d\n", make_span);
+    printf("Time: %.5f\n", elapsed_time);
 }
 
 int main(int argc, char *argv[]) {

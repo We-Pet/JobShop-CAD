@@ -34,4 +34,3 @@ int read_file_matrix(FILE *file_pointer, struct Job *jobs){
     fclose(file_pointer);
     return EXIT_SUCCESS;
 }
-
