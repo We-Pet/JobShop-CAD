@@ -24,7 +24,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
     clock_t time_after = clock();
     double time = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
     printf("Makespan: %d\n", make_span);
-    printf("Time: %.5f\n", elapsed_time);
+    printf("Time: %.5f\n", time);
 }
 
 int main(int argc, char *argv[]) {
