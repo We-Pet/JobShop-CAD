@@ -7,3 +7,4 @@
 #include "structs.h"
 #include "read_input_file.c"
 #include "sort.c"
+#include "../sequencial/scheduled_jobs.c"
