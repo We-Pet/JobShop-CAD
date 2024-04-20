@@ -21,3 +21,6 @@ matrix10:
 
 matrix20:
 	./tmp/main input_files/ft20.jss
+
+matrix80:
+	./tmp/main input_files/ft80.jss
