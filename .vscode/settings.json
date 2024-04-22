@@ -5,7 +5,10 @@
         "random": "c",
         "limits.h": "c",
         "math.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "includes.h": "c",
+        "__mutex_base": "c",
+        "cstdlib": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -1,4 +1,5 @@
 #include "../common/includes.h"
+#include "scheduled_jobs.c"
 
 int main(int argc, char *argv[])
 {

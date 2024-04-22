@@ -4,6 +4,11 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
     int job_completion_times[number_of_jobs];
     int make_span = 0;
 
+    char output_file[50];
+    sprintf(output_file, "output_files/sequencial/ft_%d.jss", number_of_jobs);
+    FILE* file_ptr = fopen(output_file, "a");
+
+
     memset(machines, 0, sizeof(machines));
     memset(job_completion_times, 0, sizeof(job_completion_times));
 
@@ -20,10 +25,12 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
             job_completion_times[i] = end_time;
             if (end_time > make_span)
                 make_span = end_time;
-            printf("Job %d (Machine %d): Start time = %d, End time = %d\n", jobs[i].job_number, machine_id, start_time, end_time);
+            fprintf(file_ptr, "%d ", start_time);
         }
+        fprintf(file_ptr, "\n");
     }
     clock_t time_after = clock();
+    fclose(file_ptr);
     double time_in_ms;
     // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
     #ifdef _WIN32
