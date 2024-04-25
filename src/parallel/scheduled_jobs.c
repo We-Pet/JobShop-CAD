@@ -19,6 +19,10 @@ void* job_function(void* arg){
     char output_file[50];
     sprintf(output_file, "output_files/parallel/ft_%d.jss", thread_args->number_of_jobs);
     FILE *file_ptr = fopen(output_file, "a");
+    if (!file_ptr) {
+        perror("Error opening file");
+        return NULL;
+    }
 
     pthread_mutex_t* mutexes_job_completion_times = thread_args->mutexes_job_completion_times;
     pthread_mutex_t* mutexes_machines = thread_args->mutexes_machines;
@@ -72,6 +76,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     // if num_threads is greater than number_of_jobs, only create as many threads as there are jobs.
     int limit_iterations = (num_threads > number_of_jobs) ? number_of_jobs : num_threads;
 
+    clock_t time_before = clock();
     for (int i = 0; i < limit_iterations; i++){
         thread_args[i].job = jobs[i % number_of_jobs];
         thread_args[i].mutexes_machines = mutexes_machines;
@@ -103,10 +108,21 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
 
     for (int i = 0; i < num_threads; i++)
         pthread_join(threads[i], NULL);
+    clock_t time_after = clock();
+
+    double time_in_ms;
+    // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
+    #ifdef _WIN32
+        time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
+    #else
+        time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
+    #endif
 
     pthread_mutex_destroy(mutexes_job_completion_times);
     pthread_mutex_destroy(mutexes_machines);
     pthread_mutex_destroy(&make_span_mutex);
 
     printf("Makespan: %d\n", make_span);
+    printf("Time: %.5f\n", time_in_ms);
+
 }
