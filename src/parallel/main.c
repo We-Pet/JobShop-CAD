@@ -14,6 +14,10 @@ int main(int argc, char *argv[]) {
   }
 
   int number_of_threads = atoi(argv[2]);
+  if (number_of_threads <= 0){
+    fprintf(stderr, "Threads number must be > 0\n");
+    return EXIT_FAILURE;
+  }
 
   // Get number os jobs and number of machines from first line
   int number_of_jobs = 0, number_of_machines = 0;
@@ -27,7 +31,7 @@ int main(int argc, char *argv[]) {
   }
 
   read_file_matrix(file_pointer, jobs);
-  sort_jobs_array(jobs, number_of_jobs);
+  //sort_jobs_array(jobs, number_of_jobs);
 
   printf("Scheduled Jobs:\n");
   schedule_jobs(jobs, number_of_jobs, number_of_machines, number_of_threads);
