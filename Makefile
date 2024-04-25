@@ -1,5 +1,8 @@
 clean:
-	rm -f tmp/* output_files/sequencial/* output_files/parallel/*
+	rm -f tmp/*
+
+remove:
+	rm -f output_files/*/*.jss
 
 buildS:
 	gcc -o tmp/sequencial src/sequencial/main.c
