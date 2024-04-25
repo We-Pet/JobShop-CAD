@@ -6,4 +6,3 @@
 #include <time.h>
 #include "structs.h"
 #include "read_input_file.c"
-#include "sort.c"

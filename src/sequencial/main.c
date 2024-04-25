@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
     }
 
     read_file_matrix(file_pointer, jobs);
-    //sort_jobs_array(jobs, number_of_jobs);
 
     printf("Scheduled Jobs:\n");
     schedule_jobs(jobs, number_of_jobs, number_of_machines);
