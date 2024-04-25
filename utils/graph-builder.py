@@ -33,7 +33,7 @@ def plot_schedule(jobs):
         if job[1] not in machines:
             machines[job[1]] = []
         machines[job[1]].append(job)
-           
+
     _, ax = plt.subplots()
 
     ax.set_xlabel("Time")
@@ -52,7 +52,7 @@ def plot_schedule(jobs):
     ax.set_title("Jobshop Schedule")
     ax.legend()
     plt.show()
-    
+
 
 if __name__ == "__main__":
     import sys

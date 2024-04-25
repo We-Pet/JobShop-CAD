@@ -1,0 +1,9 @@
+Job 0 (Machine 0): Start time = 0, End time = 3
+Job 0 (Machine 1): Start time = 3, End time = 5
+Job 0 (Machine 2): Start time = 5, End time = 7
+Job 1 (Machine 0): Start time = 3, End time = 5
+Job 2 (Machine 1): Start time = 5, End time = 9
+Job 2 (Machine 2): Start time = 9, End time = 12
+Job 2 (Machine 0): Start time = 12, End time = 13
+Job 1 (Machine 2): Start time = 7, End time = 8
+Job 1 (Machine 1): Start time = 9, End time = 13
