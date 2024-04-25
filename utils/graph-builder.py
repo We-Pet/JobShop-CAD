@@ -34,23 +34,23 @@ def plot_schedule(jobs):
             machines[job[1]] = []
         machines[job[1]].append(job)
 
-    _, ax = plt.subplots()
-
+    _, ax = plt.subplots(figsize=(10, 5))
     ax.set_xlabel("Time")
     colors = ['red', 'blue', 'green']
     labels_shown = set()
     for i, machine in enumerate(sorted(machines.keys())):
-        for job in machines[machine]:
+        jobs_on_machine = sorted(machines[machine], key=lambda x: x[0])
+        for job in jobs_on_machine:
             if job[0] not in labels_shown:
                 ax.plot([job[2], job[3]], [machine, machine], label=f"Job {job[0]}", color=colors[job[0]])
                 labels_shown.add(job[0])
-            ax.fill_betweenx([machine-0.1, machine+0.1], job[2], job[3], color=colors[job[0]], alpha=0.3)
+            ax.fill_betweenx([machine-0.1, machine+0.1], job[2], job[3], color=colors[job[0]], alpha=1)
     ax.set_yticks(sorted(machines.keys()))
     ax.xaxis.grid(True)
     ax.set_xticks(range(start, end+1))
     ax.set_ylabel("Machine")
     ax.set_title("Jobshop Schedule")
-    ax.legend()
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.show()
 
 
