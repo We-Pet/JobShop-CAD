@@ -6,7 +6,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
 
     char output_file[50];
     sprintf(output_file, "output_files/sequencial/ft_%d.jss", number_of_jobs);
-    FILE* file_ptr = fopen(output_file, "a");
+    FILE* file_ptr = fopen(output_file, "w+");
 
 
     memset(machines, 0, sizeof(machines));

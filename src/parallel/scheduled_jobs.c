@@ -18,7 +18,7 @@ void* job_function(void* arg){
 
     char output_file[50];
     sprintf(output_file, "output_files/parallel/ft_%d.jss", thread_args->number_of_jobs);
-    FILE *file_ptr = fopen(output_file, "a");
+    FILE *file_ptr = fopen(output_file, "w+");
     if (!file_ptr) {
         perror("Error opening file");
         return NULL;

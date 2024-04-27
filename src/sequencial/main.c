@@ -22,9 +22,7 @@ int main(int argc, char *argv[])
 
     struct Job jobs[number_of_jobs];
     for (int i = 0; i < number_of_jobs; i++)
-    {
         jobs[i].total_operations = 0;
-    }
 
     read_file_matrix(file_pointer, jobs);
 
