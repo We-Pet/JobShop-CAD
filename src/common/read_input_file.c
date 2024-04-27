@@ -36,7 +36,6 @@ int read_file_matrix(FILE *file_pointer, struct Job *jobs){
             Job[0].operations[2].duration = 2
         */
         jobs[job_number].job_number = job_number;
-        jobs[job_number].total_duration += duration;
         jobs[job_number].total_operations++;
         jobs[job_number].operations[operation_id].duration = duration;
         jobs[job_number].operations[operation_id].machine_number = machine_id;
