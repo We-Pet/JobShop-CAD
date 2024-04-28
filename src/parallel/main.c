@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
-    fprintf(stderr, "Bad arguments: %s <file> <n_threads>\n", argv[0]);
+    fprintf(stderr, "Bad arguments: %s <file> threads=<n_threads>\n", argv[0]);
     return EXIT_FAILURE;
   }
 

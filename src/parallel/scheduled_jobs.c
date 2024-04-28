@@ -61,7 +61,6 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
 
     pthread_mutex_t mutexes_machines[number_of_machines];
     pthread_mutex_t mutexes_job_completion_times[number_of_jobs];
-    pthread_t threads[num_threads];
 
     memset(machines, 0, sizeof(machines));
     memset(job_completion_times, 0, sizeof(job_completion_times));
@@ -75,6 +74,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
 
     // if num_threads is greater than number_of_jobs, only create as many threads as there are jobs.
     int limit_iterations = (num_threads > number_of_jobs) ? number_of_jobs : num_threads;
+    pthread_t threads[limit_iterations];
 
     clock_t time_before = clock();
     for (int i = 0; i < limit_iterations; i++){
