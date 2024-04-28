@@ -11,3 +11,5 @@ struct Job{
     int total_operations;
     struct Operation operations[MAX_OPERATIONS];
 };
+
+struct timeval start_time, end_time;

@@ -4,5 +4,6 @@
 #include <string.h>
 #include <limits.h>
 #include <time.h>
+#include <sys/time.h>
 #include "structs.h"
 #include "read_input_file.c"

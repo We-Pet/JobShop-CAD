@@ -76,7 +76,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     int limit_iterations = (num_threads > number_of_jobs) ? number_of_jobs : num_threads;
     pthread_t threads[limit_iterations];
 
-    clock_t time_before = clock();
+    gettimeofday(&start_time, NULL);
     for (int i = 0; i < limit_iterations; i++){
         thread_args[i].job = jobs[i % number_of_jobs];
         thread_args[i].mutexes_machines = mutexes_machines;
@@ -108,21 +108,16 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
 
     for (int i = 0; i < num_threads; i++)
         pthread_join(threads[i], NULL);
-    clock_t time_after = clock();
-
-    double time_in_ms;
-    // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
-    #ifdef _WIN32
-        time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
-    #else
-        time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
-    #endif
+    gettimeofday(&end_time, NULL);
 
     pthread_mutex_destroy(mutexes_job_completion_times);
     pthread_mutex_destroy(mutexes_machines);
     pthread_mutex_destroy(&make_span_mutex);
 
     printf("Makespan: %d\n", make_span);
-    printf("Time: %.5f\n", time_in_ms);
+    double elapsed_time = (end_time.tv_sec - start_time.tv_sec) * 1000.0 + (end_time.tv_usec - start_time.tv_usec) / 1000.0;
+    double elapsed_time_in_seconds = elapsed_time / 1000.0;
+
+    printf("Elapsed time: %.5fs\n", elapsed_time_in_seconds);
 
 }
