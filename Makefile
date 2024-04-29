@@ -1,25 +1,17 @@
-# Clean all temporary files
 clean:
-	del /Q tmp\*
+	rm -f tmp/*
 
-# Remove all .jss files from output_files directory and its subdirectories
 remove:
-	del /Q output_files\*.jss
+	rm -f output_files/*/*.jss
 
-# Build sequential executable
 buildS:
-	gcc -o tmp\sequencial src\sequencial\main.c
+	gcc -o tmp/sequencial src/sequencial/main.c
 
-# Build parallel executable
 buildP:
-	gcc -o tmp\parallel src\parallel\main.c -pthread
+	gcc -lpthread -o tmp/parallel src/parallel/main.c
 
-# Run sequential with input file $*
 runS-%:
-	make buildS
-	tmp\sequencial input_files\$*.jss
+	make buildS && ./tmp/sequencial input_files/$*.jss
 
-# Run parallel with input file $* and $(threads) threads
 runP-%:
-	make buildP
-	tmp\parallel input_files\$*.jss $(threads)
+	make buildP && ./tmp/parallel input_files/$*.jss $(threads)
