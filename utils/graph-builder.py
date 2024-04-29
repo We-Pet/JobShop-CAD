@@ -25,7 +25,7 @@ def read_data(filename):
     return jobs
 
 def plot_schedule(jobs):
-    jobs.sort(key=lambda x: x[2])
+    jobs.sort(key=lambda x: x[3])
     start = jobs[0][2]
     end = jobs[-1][3]
     machines = {}

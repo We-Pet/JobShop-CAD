@@ -12,4 +12,16 @@ struct Job{
     struct Operation operations[MAX_OPERATIONS];
 };
 
-struct timeval start_time, end_time;
+struct Output_time{
+    int job_number;
+    int *start_time_operations;
+};
+
+struct Thread_Args{
+    struct Job job;
+    int *start_time_operations;
+    pthread_mutex_t* mutexes_machines;
+    int* machines;
+    int* job_completion_times;
+    int number_of_jobs;
+};
