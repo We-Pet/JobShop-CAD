@@ -25,25 +25,51 @@ void* job_function(void* arg){
     return NULL;
 }
 
-void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads){
-    int machines[number_of_machines];
-    int job_completion_times[number_of_jobs];
+void initialize_mutexes(pthread_mutex_t *mutexes_machines, int number_of_machines) {
+    for (int i = 0; i < number_of_machines; i++)
+        pthread_mutex_init(&mutexes_machines[i], NULL);
+}
 
-    struct Thread_Args thread_args[number_of_jobs];
-    struct Output_time output_time[number_of_jobs];
-
+void initialize_output_time(struct Output_time *output_time, int number_of_jobs, struct Job *jobs) {
     for(int i = 0; i < number_of_jobs; i++){
         output_time[i].job_number = i;
         output_time[i].start_time_operations = malloc(sizeof(int) * jobs[i].total_operations);
     }
+}
+
+void write_output_file(struct Output_time *output_time, int number_of_jobs) {
+    char output_file[50];
+    sprintf(output_file, "output_files/parallel/ft_%d.jss", number_of_jobs);
+    FILE *file_ptr = fopen(output_file, "w+");
+    if (!file_ptr) {
+        perror("Error opening file");
+        return;
+    }
+
+    for (int i = 0; i<number_of_jobs; i++){
+        for(int j=0; j < output_time[i].job_number; j++){
+            fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
+        }
+        fprintf(file_ptr, "\n");
+    }
+    fclose(file_ptr);
+}
+
+void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads){
+    int machines[number_of_machines];
+    int job_completion_times[number_of_jobs];
 
     pthread_mutex_t mutexes_machines[number_of_machines];
 
     memset(machines, 0, sizeof(machines));
     memset(job_completion_times, 0, sizeof(job_completion_times));
 
-    for (int i = 0; i < number_of_machines; i++)
-        pthread_mutex_init(&mutexes_machines[i], NULL);
+    initialize_mutexes(mutexes_machines, number_of_machines);
+
+    struct Thread_Args thread_args[number_of_jobs];
+    struct Output_time output_time[number_of_jobs];
+
+    initialize_output_time(output_time, number_of_jobs, jobs);
 
     // if num_threads is greater than number_of_jobs, only create as many threads as there are jobs.
     int limit_iterations = (num_threads > number_of_jobs) ? number_of_jobs : num_threads;
@@ -83,21 +109,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
         pthread_join(threads[i], NULL);
     clock_t time_after = clock();
 
-    char output_file[50];
-    sprintf(output_file, "output_files/parallel/ft_%d.jss", thread_args->number_of_jobs);
-    FILE *file_ptr = fopen(output_file, "w+");
-    if (!file_ptr) {
-        perror("Error opening file");
-        return;
-    }
-
-    for (int i = 0; i<number_of_jobs; i++){
-        for(int j=0; j < jobs[i].total_operations; j++){
-            fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
-        }
-        fprintf(file_ptr, "\n");
-    }
-    fclose(file_ptr);
+    write_output_file(output_time, number_of_jobs);
 
     int make_span = 0;
     for (int i = 0; i < number_of_jobs; i++){
