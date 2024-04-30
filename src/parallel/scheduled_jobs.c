@@ -30,14 +30,24 @@ void initialize_mutexes(pthread_mutex_t *mutexes_machines, int number_of_machine
         pthread_mutex_init(&mutexes_machines[i], NULL);
 }
 
-void initialize_output_time(struct Output_time *output_time, int number_of_jobs, struct Job *jobs) {
+void initialize_output_time(struct Output_time *output_time, int number_of_jobs, const struct Job *jobs) {
     for(int i = 0; i < number_of_jobs; i++){
         output_time[i].job_number = i;
         output_time[i].start_time_operations = malloc(sizeof(int) * jobs[i].total_operations);
     }
 }
 
-void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads){
+void create_thread(pthread_t *threads, struct Thread_Args *thread_args,const struct Job *jobs, int num_threads, int current_job_index, struct Output_time *output_time, int *job_completion_times, pthread_mutex_t *mutexes_machines, int *machines, int number_of_jobs) {
+    thread_args[current_job_index].job = jobs[current_job_index];
+    thread_args[current_job_index].mutexes_machines = mutexes_machines;
+    thread_args[current_job_index].machines = machines;
+    thread_args[current_job_index].job_completion_times = job_completion_times;
+    thread_args[current_job_index].number_of_jobs = number_of_jobs;
+    thread_args[current_job_index].start_time_operations = output_time[current_job_index].start_time_operations;
+    pthread_create(&threads[current_job_index], NULL, job_function, (void*)&thread_args[current_job_index]);
+}
+
+void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads){
     int machines[number_of_machines];
     int job_completion_times[number_of_jobs];
 
@@ -58,32 +68,20 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     pthread_t threads[limit_iterations];
 
     clock_t time_before = clock();
-    for (int i = 0; i < limit_iterations; i++){
-        thread_args[i].job = jobs[i % number_of_jobs];
-        thread_args[i].mutexes_machines = mutexes_machines;
-        thread_args[i].machines = machines;
-        thread_args[i].job_completion_times = job_completion_times;
-        thread_args[i].number_of_jobs = number_of_jobs;
-        thread_args[i].start_time_operations = output_time[i].start_time_operations;
-        pthread_create(&threads[i], NULL, job_function, (void*)&thread_args[i]);
+    for (int i = 0; i < limit_iterations; i++) {
+        create_thread(threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
     }
 
-    int current_job_index = num_threads;
-    if (current_job_index < number_of_jobs){
+    int current_job_index = limit_iterations;
+    if (current_job_index < number_of_jobs) {
         int threads_index = 0;
-        while (current_job_index < number_of_jobs){
+        while (current_job_index < number_of_jobs) {
             // wait for the thread in the threads_index to finish
             pthread_join(threads[threads_index], NULL);
-            thread_args[threads_index].job = jobs[current_job_index];
-            thread_args[threads_index].job = jobs[current_job_index];
-            thread_args[threads_index].mutexes_machines = mutexes_machines;
-            thread_args[threads_index].machines = machines;
-            thread_args[threads_index].job_completion_times = job_completion_times;
-            thread_args[threads_index].start_time_operations = output_time[current_job_index].start_time_operations;
-            pthread_create(&threads[threads_index], NULL, job_function, (void*)&thread_args[threads_index]);
+            create_thread(threads, thread_args, jobs, num_threads, current_job_index, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
             threads_index++;
             current_job_index++;
-            if (threads_index == num_threads) threads_index = 0;
+            if (threads_index == limit_iterations) threads_index = 0;
         }
     }
 
@@ -92,7 +90,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     clock_t time_after = clock();
 
     char output_file[50];
-    sprintf(output_file, "output_files/parallel/ft_%d.jss", thread_args->number_of_jobs);
+    snprintf(output_file, sizeof(output_file), "output_files/parallel/ft_%d.jss", thread_args[0].number_of_jobs);
     FILE *file_ptr = fopen(output_file, "w+");
     if (!file_ptr) {
         perror("Error opening file");
