@@ -1,20 +1,14 @@
-void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
+void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines, struct Output_time *output_time)
 {
     int machines[number_of_machines];
     int job_completion_times[number_of_jobs];
     int make_span = 0;
 
-    char output_file[50];
-    sprintf(output_file, "output_files/sequencial/ft_%d.jss", number_of_jobs);
-    FILE* file_ptr = fopen(output_file, "w+");
-
-
     memset(machines, 0, sizeof(machines));
     memset(job_completion_times, 0, sizeof(job_completion_times));
 
-    gettimeofday(&start_time, NULL);
-    for (int i = 0; i < number_of_jobs; i++)
-    {
+    clock_t time_before = clock();
+    for (int i = 0; i < number_of_jobs; i++){
         for (int j = 0; j < jobs[i].total_operations; j++)
         {
             int machine_id = jobs[i].operations[j].machine_number;
@@ -25,15 +19,31 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines)
             job_completion_times[i] = end_time;
             if (end_time > make_span)
                 make_span = end_time;
-            fprintf(file_ptr, "%d ", start_time);
+            output_time[i].start_time_operations[j] = start_time;
+        }
+    }
+    clock_t time_after = clock();
+
+    char output_file[50];
+    sprintf(output_file, "output_files/sequencial/ft_%d.jss", number_of_jobs);
+    FILE* file_ptr = fopen(output_file, "w+");
+
+    for (int i = 0; i < number_of_jobs; i++){
+        for (int j = 0; j < jobs[i].total_operations; j++){
+            fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
         }
         fprintf(file_ptr, "\n");
     }
-    gettimeofday(&end_time, NULL);
     fclose(file_ptr);
-    double elapsed_time = (end_time.tv_sec - start_time.tv_sec) * 1000.0 + (end_time.tv_usec - start_time.tv_usec) / 1000.0;
-    double elapsed_time_in_seconds = elapsed_time / 1000.0;
+
+    double time_in_ms;
+    // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
+    #ifdef _WIN32
+        time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
+    #else
+        time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
+    #endif
 
     printf("Makespan: %d\n", make_span);
-    printf("Time: %.5fs\n", elapsed_time_in_seconds);
+    printf("Time: %.5fs\n", time_in_ms);
 }
