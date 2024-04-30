@@ -20,14 +20,16 @@ int main(int argc, char *argv[])
     int number_of_jobs = 0, number_of_machines = 0;
     read_file_first_line(file_pointer, &number_of_jobs, &number_of_machines);
 
+    struct Output_time output_time[number_of_jobs];
     struct Job jobs[number_of_jobs];
     for (int i = 0; i < number_of_jobs; i++)
         jobs[i].total_operations = 0;
 
     read_file_matrix(file_pointer, jobs);
 
-    printf("Scheduled Jobs:\n");
-    schedule_jobs(jobs, number_of_jobs, number_of_machines);
+    initialize_output_time(output_time, number_of_jobs, jobs);
+
+    schedule_jobs(jobs, number_of_jobs, number_of_machines, output_time);
 
     fclose(file_pointer);
     return EXIT_SUCCESS;

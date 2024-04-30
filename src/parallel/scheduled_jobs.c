@@ -30,13 +30,6 @@ void initialize_mutexes(pthread_mutex_t *mutexes_machines, int number_of_machine
         pthread_mutex_init(&mutexes_machines[i], NULL);
 }
 
-void initialize_output_time(struct Output_time *output_time, int number_of_jobs, const struct Job *jobs) {
-    for(int i = 0; i < number_of_jobs; i++){
-        output_time[i].job_number = i;
-        output_time[i].start_time_operations = malloc(sizeof(int) * jobs[i].total_operations);
-    }
-}
-
 void create_thread(pthread_t *threads, struct Thread_Args *thread_args,const struct Job *jobs, int num_threads, int current_job_index, struct Output_time *output_time, int *job_completion_times, pthread_mutex_t *mutexes_machines, int *machines, int number_of_jobs) {
     thread_args[current_job_index].job = jobs[current_job_index];
     thread_args[current_job_index].mutexes_machines = mutexes_machines;

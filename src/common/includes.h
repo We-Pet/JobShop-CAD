@@ -6,4 +6,5 @@
 #include <time.h>
 #include <pthread.h>
 #include "structs.h"
+#include "initialize_output_time.c"
 #include "read_input_file.c"
