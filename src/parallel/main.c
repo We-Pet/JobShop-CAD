@@ -2,8 +2,8 @@
 #include "scheduled_jobs.c"
 
 int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    fprintf(stderr, "Bad arguments: %s <file> threads=<n_threads>\n", argv[0]);
+  if (argc != 4) {
+    fprintf(stderr, "Bad arguments: %s <input_file> <output_file> threads=<n_threads>\n", argv[0]);
     return EXIT_FAILURE;
   }
 
@@ -13,7 +13,9 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  int number_of_threads = atoi(argv[2]);
+  char *output_file = argv[2];
+
+  int number_of_threads = atoi(argv[3]);
   if (number_of_threads <= 0){
     fprintf(stderr, "Threads number must be > 0\n");
     return EXIT_FAILURE;
@@ -32,7 +34,7 @@ int main(int argc, char *argv[]) {
   read_file_matrix(file_pointer, jobs);
 
   printf("Scheduled Jobs:\n");
-  schedule_jobs(jobs, number_of_jobs, number_of_machines, number_of_threads);
+  schedule_jobs(jobs, number_of_jobs, number_of_machines, number_of_threads, output_file);
   fclose(file_pointer);
   return EXIT_SUCCESS;
 }

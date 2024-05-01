@@ -11,7 +11,7 @@ buildP:
 	gcc -lpthread -o tmp/parallel src/parallel/main.c
 
 runS-%:
-	make buildS && ./tmp/sequencial input_files/$*.jss
+	make buildS && ./tmp/sequencial input_files/$*.jss output_files/sequencial/$*.jss
 
 runP-%:
-	make buildP && ./tmp/parallel input_files/$*.jss $(threads)
+	make buildP && ./tmp/parallel input_files/$*.jss output_files/parallel/$*.jss $(threads)

@@ -1,4 +1,4 @@
-void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines, struct Output_time *output_time)
+void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines, struct Output_time *output_time, char* output_file)
 {
     int machines[number_of_machines];
     int job_completion_times[number_of_jobs];
@@ -22,8 +22,6 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     }
     clock_t time_after = clock();
 
-    char output_file[50];
-    sprintf(output_file, "output_files/sequencial/ft_%d.jss", number_of_jobs);
     FILE* file_ptr = fopen(output_file, "w+");
 
     for (int i = 0; i < number_of_jobs; i++){
