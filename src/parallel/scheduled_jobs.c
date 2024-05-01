@@ -40,7 +40,7 @@ void create_thread(pthread_t *threads, struct Thread_Args *thread_args,const str
     pthread_create(&threads[current_job_index], NULL, job_function, (void*)&thread_args[current_job_index]);
 }
 
-void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads){
+void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads, char *output_file){
     int machines[number_of_machines];
     int job_completion_times[number_of_jobs];
 
@@ -84,8 +84,6 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
 
     pthread_mutex_destroy(mutexes_machines);
 
-    char output_file[50];
-    snprintf(output_file, sizeof(output_file), "output_files/parallel/ft_%d.jss", thread_args[0].number_of_jobs);
     FILE *file_ptr = fopen(output_file, "w+");
     if (!file_ptr) {
         perror("Error opening file");
