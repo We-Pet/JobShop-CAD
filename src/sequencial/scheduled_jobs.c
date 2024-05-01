@@ -17,8 +17,6 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
             int end_time = start_time + duration;
             machines[machine_id] = end_time;
             job_completion_times[i] = end_time;
-            if (end_time > make_span)
-                make_span = end_time;
             output_time[i].start_time_operations[j] = start_time;
         }
     }
@@ -29,6 +27,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     FILE* file_ptr = fopen(output_file, "w+");
 
     for (int i = 0; i < number_of_jobs; i++){
+        make_span = job_completion_times[i] > make_span ? job_completion_times[i] : make_span;
         for (int j = 0; j < jobs[i].total_operations; j++){
             fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
         }

@@ -82,6 +82,8 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
         pthread_join(threads[i], NULL);
     clock_t time_after = clock();
 
+    pthread_mutex_destroy(mutexes_machines);
+
     char output_file[50];
     snprintf(output_file, sizeof(output_file), "output_files/parallel/ft_%d.jss", thread_args[0].number_of_jobs);
     FILE *file_ptr = fopen(output_file, "w+");
@@ -90,19 +92,15 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
         return;
     }
 
+    int make_span = 0;
     for (int i = 0; i<number_of_jobs; i++){
+        make_span = (job_completion_times[i] > make_span) ? job_completion_times[i] : make_span;
         for(int j=0; j < jobs[i].total_operations; j++){
             fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
         }
         fprintf(file_ptr, "\n");
     }
     fclose(file_ptr);
-
-    int make_span = 0;
-    for (int i = 0; i < number_of_jobs; i++){
-        make_span = (job_completion_times[i] > make_span) ? job_completion_times[i] : make_span;
-    }
-    pthread_mutex_destroy(mutexes_machines);
 
     printf("Makespan: %d\n", make_span);
     double time_in_ms;
