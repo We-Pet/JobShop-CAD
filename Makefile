@@ -15,3 +15,11 @@ runS-%:
 
 runP-%:
 	make buildP && ./tmp/parallel input_files/$*.jss $(threads)
+
+validateS-%:
+	gcc -o tmp/output_validator src/output_validator/main.c && ./tmp/output_validator output_files/sequencial/$*.jss
+
+buildValidateP:
+	gcc -o tmp/output_validator src/output_validator/main.c
+validateP-%:
+	make buildValidateP && ./tmp/output_validator input_files/ft0$*.jss output_files/parallel/ft_$*.jss $* 
