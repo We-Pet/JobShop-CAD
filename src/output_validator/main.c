@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
         // Check sequence
         for (int j = 0; j < number_of_operations - 1; j++)
         {
-
             if (check_sequence(jobs[i], output_times) == -1)
             {
                 printf("\nInvalid sequence on job %d\n", i);
@@ -40,24 +39,16 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-
-        // Check overlap on the same machine
-        // for (int j = 0; j < number_of_operations; j++)
-        // {
-        //     for (int k = j + 1; k < number_of_operations; k++)
-        //     {
-        //         if (jobs[i].operations[j].machine_number == jobs[i].operations[k].machine_number)
-        //         {
-        //             if (output_times[i].start_time_operations[j] < output_times[i].start_time_operations[k] + jobs[i].operations[k].duration &&
-        //                 output_times[i].start_time_operations[k] < output_times[i].start_time_operations[j] + jobs[i].operations[j].duration)
-        //             {
-        //                 printf("\nOverlap on the same machine\n");
-        //                 return EXIT_FAILURE;
-        //             }
-        //         }
-        //     }
-        // }
         printf("\n");
+    }
+
+    if (valid != 1)
+    {
+        printf("Output is invalid\n");
+    }
+    else
+    {
+        printf("Output is valid\n");
     }
 
     fclose(file_pointer);
