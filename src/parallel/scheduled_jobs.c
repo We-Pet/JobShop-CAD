@@ -30,14 +30,14 @@ void initialize_mutexes(pthread_mutex_t *mutexes_machines, int number_of_machine
         pthread_mutex_init(&mutexes_machines[i], NULL);
 }
 
-void create_thread(pthread_t *threads, struct Thread_Args *thread_args,const struct Job *jobs, int num_threads, int current_job_index, struct Output_time *output_time, int *job_completion_times, pthread_mutex_t *mutexes_machines, int *machines, int number_of_jobs) {
-    thread_args[current_job_index].job = jobs[current_job_index];
-    thread_args[current_job_index].mutexes_machines = mutexes_machines;
-    thread_args[current_job_index].machines = machines;
-    thread_args[current_job_index].job_completion_times = job_completion_times;
-    thread_args[current_job_index].number_of_jobs = number_of_jobs;
-    thread_args[current_job_index].start_time_operations = output_time[current_job_index].start_time_operations;
-    pthread_create(&threads[current_job_index], NULL, job_function, (void*)&thread_args[current_job_index]);
+void create_thread(int thread_index, pthread_t *threads, struct Thread_Args *thread_args,const struct Job *jobs, int num_threads, int current_job_index, struct Output_time *output_time, int *job_completion_times, pthread_mutex_t *mutexes_machines, int *machines, int number_of_jobs) {
+    thread_args[thread_index].job = jobs[current_job_index];
+    thread_args[thread_index].mutexes_machines = mutexes_machines;
+    thread_args[thread_index].machines = machines;
+    thread_args[thread_index].job_completion_times = job_completion_times;
+    thread_args[thread_index].number_of_jobs = number_of_jobs;
+    thread_args[thread_index].start_time_operations = output_time[current_job_index].start_time_operations;
+    pthread_create(&threads[thread_index], NULL, job_function, (void*)&thread_args[thread_index]);
 }
 
 void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads, char *output_file){
@@ -62,7 +62,7 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
 
     clock_t time_before = clock();
     for (int i = 0; i < limit_iterations; i++) {
-        create_thread(threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
+        create_thread(i, threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
     }
 
     int current_job_index = limit_iterations;
@@ -71,7 +71,7 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
         while (current_job_index < number_of_jobs) {
             // wait for the thread in the threads_index to finish
             pthread_join(threads[threads_index], NULL);
-            create_thread(threads, thread_args, jobs, num_threads, current_job_index, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
+            create_thread(threads_index, threads, thread_args, jobs, num_threads, current_job_index, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
             threads_index++;
             current_job_index++;
             if (threads_index == limit_iterations) threads_index = 0;
