@@ -1,3 +1,27 @@
+ifeq ($(OS),Windows_NT)
+
+clean:
+	del /Q tmp\*
+
+remove:
+	del /Q output_files\*\*.jss
+
+buildS:
+	gcc -o tmp\sequencial src\sequencial\main.c
+
+buildP:
+	gcc -o tmp\parallel src\parallel\main.c
+
+runS-%:
+	make buildS
+	tmp\sequencial.exe input_files\$*.jss output_files\sequencial\$*.jss
+
+runP-%:
+	make buildP
+	tmp\parallel.exe input_files\$*.jss output_files\parallel\$*.jss $(threads)
+
+else
+
 clean:
 	rm -f tmp/*
 
@@ -15,3 +39,5 @@ runS-%:
 
 runP-%:
 	make buildP && ./tmp/parallel input_files/$*.jss output_files/parallel/$*.jss $(threads)
+
+endif
