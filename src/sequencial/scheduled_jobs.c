@@ -8,6 +8,7 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
     memset(job_completion_times, 0, sizeof(job_completion_times));
 
     clock_t time_before = clock();
+    clock_gettime(CLOCK_MONOTONIC, &start);
     for (int i = 0; i < number_of_jobs; i++){
         for (int j = 0; j < jobs[i].total_operations; j++)
         {
@@ -18,9 +19,11 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
             machines[machine_id] = end_time;
             job_completion_times[i] = end_time;
             output_time[i].start_time_operations[j] = start_time;
+            //printf("Job %d (Machine %d): Start time = %d, End time = %d\n", i, machine_id, start_time, end_time);
         }
     }
     clock_t time_after = clock();
+    clock_gettime(CLOCK_MONOTONIC, &finish);
 
     FILE* file_ptr = fopen(output_file, "w+");
 
@@ -41,6 +44,11 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
         time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
     #endif
 
+    double elapsed;
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+
     printf("Makespan: %d\n", make_span);
     printf("Time: %.5fs\n", time_in_ms);
+    printf("Elapsed: %.5fs\n", elapsed);
 }

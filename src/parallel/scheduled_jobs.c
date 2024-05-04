@@ -21,7 +21,11 @@ void *job_function(void *arg)
         machines[machine_id] = end_time;
         pthread_mutex_unlock(&mutexes_machines[machine_number]);
         job_completion_times[job.job_number] = end_time;
-        printf("Job %d (Machine %d): Start time = %d, End time = %d\n", job.job_number, machine_id, start_time, end_time);
+        //printf("Job %d (Machine %d): Start time = %d, End time = %d\n", job.job_number, machine_id, start_time, end_time);
+        long long counter = 0;
+        for (long long i = 0; i < 1000000; ++i) {
+            counter += i;
+        }
         start_time_operations[i] = start_time;
     }
     return NULL;
@@ -66,8 +70,8 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
     pthread_t threads[limit_iterations];
 
     clock_t time_before = clock();
-    for (int i = 0; i < limit_iterations; i++)
-    {
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    for (int i = 0; i < limit_iterations; i++) {
         create_thread(i, threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
     }
 
@@ -89,6 +93,7 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
 
     for (int i = 0; i < num_threads; i++)
         pthread_join(threads[i], NULL);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
     clock_t time_after = clock();
 
     pthread_mutex_destroy(mutexes_machines);
@@ -114,12 +119,17 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
 
     printf("Makespan: %d\n", make_span);
     double time_in_ms;
-// Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
-#ifdef _WIN32
-    time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
-#else
-    time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
-#endif
+    double elapsed;
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
+    #ifdef _WIN32
+        time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
+    #else
+        time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
+    #endif
 
     printf("Time: %.5f\n", time_in_ms);
+    printf("Elapsed: %.5f\n", elapsed);
+
 }

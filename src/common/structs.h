@@ -1,4 +1,4 @@
-#define MAX_OPERATIONS 100
+#define MAX_OPERATIONS 2000
 
 struct Operation{
     int machine_number;
@@ -25,3 +25,5 @@ struct Thread_Args{
     int* job_completion_times;
     int number_of_jobs;
 };
+
+struct timespec start, finish;
