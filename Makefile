@@ -48,3 +48,5 @@ buildValidateP:
 	
 validateP-%:
 	make buildValidateP && ./tmp/output_validator input_files/ft$*.jss output_files/parallel/ft$*.jss $* 
+
+endif
