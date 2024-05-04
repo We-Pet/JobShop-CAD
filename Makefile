@@ -23,4 +23,4 @@ buildValidateP:
 	gcc -o tmp/output_validator src/output_validator/main.c
 	
 validateP-%:
-	make buildValidateP && ./tmp/output_validator input_files/ft0$*.jss output_files/parallel/ft0$*.jss $* 
+	make buildValidateP && ./tmp/output_validator input_files/ft$*.jss output_files/parallel/ft$*.jss $* 

@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-        printf("\n");
     }
 
     if (valid != 1)
