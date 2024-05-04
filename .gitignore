@@ -3,3 +3,10 @@
 tmp/*
 
 !tmp/.gitkeep
+
+output_file/parallel/*
+output_file/sequencial/*
+
+!output_file/parallel/.gitkeep
+!output_file/sequencial/.gitkeep
+

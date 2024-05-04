@@ -20,6 +20,17 @@ runP-%:
 	make buildP
 	tmp\parallel.exe input_files\$*.jss output_files\parallel\$*.jss $(threads)
 
+buildValidate:
+	gcc -o tmp\output_validatorS src\output_validator\main.c
+
+validateS-%:
+	make buildValidate
+	tmp\output_validator.exe input_files\ft$*.jss output_files\sequencial\ft$*.jss $*
+
+validateP-%:
+	make buildValidate
+	tmp\output_validator.exe input_files\ft$*.jss output_files\parallel\ft$*.jss $*
+
 else
 
 clean:
@@ -40,13 +51,13 @@ runS-%:
 runP-%:
 	make buildP && ./tmp/parallel input_files/$*.jss output_files/parallel/$*.jss $(threads)
 
-validateS-%:
-	gcc -o tmp/output_validator src/output_validator/main.c && ./tmp/output_validator output_files/sequencial/$*.jss
+buildValidate:
+	gcc -o tmp/output_validatorS src/output_validator/main.c
 
-buildValidateP:
-	gcc -o tmp/output_validator src/output_validator/main.c
-	
+validateS-%:
+	make buildValidate && ./tmp/output_validator input_files/ft$*.jss output_files/sequencial/ft$*.jss $*
+
 validateP-%:
-	make buildValidateP && ./tmp/output_validator input_files/ft$*.jss output_files/parallel/ft$*.jss $* 
+	make buildValidate && ./tmp/output_validator input_files/ft$*.jss output_files/parallel/ft$*.jss $*
 
 endif
