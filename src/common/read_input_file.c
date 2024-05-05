@@ -26,8 +26,7 @@ int read_file_matrix(FILE *file_pointer, struct Job *jobs){
         /* Example:
             0  3  1  2  2  2
             Job[0].job_number = 0
-            Job[0].total_duration = 7
-            Job[0].total_operations = 3
+            Job[0].total_operations = 1->2->
             Job[0].operations[0].machine_number = 0
             Job[0].operations[0].duration = 3
             Job[0].operations[1].machine_number = 1

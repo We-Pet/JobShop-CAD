@@ -7,10 +7,10 @@ remove:
 	del /Q output_files\*\*.jss
 
 buildS:
-	gcc -o tmp\sequencial src\sequencial\main.c
+	gcc -o tmp\sequencial src\sequencial\main.c -Wl,--stack,16777216
 
 buildP:
-	gcc -o tmp\parallel src\parallel\main.c
+	gcc -o tmp\parallel src\parallel\main.c -Wl,--stack,33554432
 
 runS-%:
 	make buildS
@@ -21,7 +21,7 @@ runP-%:
 	tmp\parallel.exe input_files\$*.jss output_files\parallel\$*.jss $(threads)
 
 buildValidate:
-	gcc -o tmp\output_validatorS src\output_validator\main.c
+	gcc -o tmp\output_validatorS src\output_validator\main.c -Wl,--stack,16777216
 
 validateS-%:
 	make buildValidate
