@@ -14,8 +14,6 @@ int read_file_first_line(FILE *file_pointer, int *number_of_jobs, int *number_of
 
 int read_file_matrix(FILE *file_pointer, struct Job *jobs){
 
-    char line_buffer[256];
-
     int job_number = 0, machine_id = 0, duration = 0, operation_id = 0;
     int num1, num2;
     // Read file until finding a integer, and jump to the next integer (read the machine and jump to the duration)
@@ -23,18 +21,6 @@ int read_file_matrix(FILE *file_pointer, struct Job *jobs){
         // Read file until finding a integer, and jump to the next integer (read the duration and jump to the next machine)
         fscanf(file_pointer, "%d", &duration);
 
-        /* Example:
-            0  3  1  2  2  2
-            Job[0].job_number = 0
-            Job[0].total_duration = 7
-            Job[0].total_operations = 3
-            Job[0].operations[0].machine_number = 0
-            Job[0].operations[0].duration = 3
-            Job[0].operations[1].machine_number = 1
-            Job[0].operations[1].duration = 2
-            Job[0].operations[2].machine_number = 2
-            Job[0].operations[2].duration = 2
-        */
         jobs[job_number].job_number = job_number;
         jobs[job_number].total_operations++;
         jobs[job_number].operations[operation_id].duration = duration;

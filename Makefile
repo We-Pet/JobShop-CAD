@@ -52,7 +52,7 @@ runP-%:
 	make buildP && ./tmp/parallel input_files/$*.jss output_files/parallel/$*.jss $(threads)
 
 buildValidate:
-	gcc -o tmp/output_validatorS src/output_validator/main.c
+	gcc -o tmp/output_validator src/output_validator/main.c
 
 validateS-%:
 	make buildValidate && ./tmp/output_validator input_files/ft$*.jss output_files/sequencial/ft$*.jss $*

@@ -20,6 +20,10 @@ void schedule_jobs(struct Job *jobs, int number_of_jobs, int number_of_machines,
             job_completion_times[i] = end_time;
             output_time[i].start_time_operations[j] = start_time;
             //printf("Job %d (Machine %d): Start time = %d, End time = %d\n", i, machine_id, start_time, end_time);
+            int counter = 0;
+            for (int i = 0; i < 1000000; ++i) {
+                counter += i;
+            }
         }
     }
     clock_t time_after = clock();
