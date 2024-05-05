@@ -1,14 +1,17 @@
 #include "../common/includes.h"
 #include "scheduled_jobs.c"
 
-int main(int argc, char *argv[]) {
-  if (argc != 4) {
+int main(int argc, char *argv[])
+{
+  if (argc != 4)
+  {
     fprintf(stderr, "Bad arguments: %s <input_file> <output_file> threads=<n_threads>\n", argv[0]);
     return EXIT_FAILURE;
   }
 
   FILE *file_pointer = fopen(argv[1], "r");
-  if (file_pointer == NULL) {
+  if (file_pointer == NULL)
+  {
     fprintf(stderr, "Error opening the file\n");
     return EXIT_FAILURE;
   }
@@ -16,7 +19,8 @@ int main(int argc, char *argv[]) {
   char *output_file = argv[2];
 
   int number_of_threads = atoi(argv[3]);
-  if (number_of_threads <= 0){
+  if (number_of_threads <= 0)
+  {
     fprintf(stderr, "Threads number must be > 0\n");
     return EXIT_FAILURE;
   }
@@ -27,7 +31,8 @@ int main(int argc, char *argv[]) {
 
   struct Job jobs[number_of_jobs];
 
-  for (int i = 0; i < number_of_jobs; i++) {
+  for (int i = 0; i < number_of_jobs; i++)
+  {
     jobs[i].total_operations = 0;
   }
 

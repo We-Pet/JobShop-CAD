@@ -21,11 +21,9 @@ void *job_function(void *arg)
         machines[machine_id] = end_time;
         pthread_mutex_unlock(&mutexes_machines[machine_number]);
         job_completion_times[job.job_number] = end_time;
-        //printf("Job %d (Machine %d): Start time = %d, End time = %d\n", job.job_number, machine_id, start_time, end_time);
-        long long counter = 0;
-        for (long long i = 0; i < 1000000; ++i) {
-            counter += i;
-        }
+        // printf("Job %d (Machine %d): Start time = %d, End time = %d\n", job.job_number, machine_id, start_time, end_time);
+        for (int i = 0; i < 100000; i++)
+            ;
         start_time_operations[i] = start_time;
     }
     return NULL;
@@ -71,23 +69,28 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
 
     clock_t time_before = clock();
     clock_gettime(CLOCK_MONOTONIC, &start);
-    for (int i = 0; i < limit_iterations; i++) {
+    for (int i = 0; i < limit_iterations; i++)
+    {
         create_thread(i, threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
     }
-
     int current_job_index = limit_iterations;
     if (current_job_index < number_of_jobs)
     {
+        for (int i = 0; i < num_threads; i++)
+            pthread_join(threads[i], NULL);
+
         int threads_index = 0;
         while (current_job_index < number_of_jobs)
         {
-            // wait for the thread in the threads_index to finish
-            pthread_join(threads[threads_index], NULL);
             create_thread(threads_index, threads, thread_args, jobs, num_threads, current_job_index, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
             threads_index++;
             current_job_index++;
             if (threads_index == limit_iterations)
+            {
+                for (int i = 0; i < num_threads; i++)
+                    pthread_join(threads[i], NULL);
                 threads_index = 0;
+            }
         }
     }
 
@@ -122,14 +125,13 @@ void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_mac
     double elapsed;
     elapsed = (finish.tv_sec - start.tv_sec);
     elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-    // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
-    #ifdef _WIN32
-        time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
-    #else
-        time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
-    #endif
+// Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
+#ifdef _WIN32
+    time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
+#else
+    time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
+#endif
 
     printf("Time: %.5f\n", time_in_ms);
-    printf("Elapsed: %.5f\n", elapsed);
-
+    printf("Elapsed Time: %.5f\n", elapsed);
 }

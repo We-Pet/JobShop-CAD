@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < number_of_jobs; i++)
     {
         int number_of_operations = jobs[i].total_operations;
-
+        printf("Number of operations for job %d: %d\n", i, number_of_operations);
         // Check sequence
         for (int j = 0; j < number_of_operations - 1; j++)
         {
