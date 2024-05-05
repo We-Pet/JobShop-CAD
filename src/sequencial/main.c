@@ -3,9 +3,9 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+    if (argc != 4)
     {
-        fprintf(stderr, "Bad arguments: %s <input_file> <output_file>\n", argv[0]);
+        fprintf(stderr, "Bad arguments: %s <input_file> <output_file> <executions>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -16,8 +16,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    char* output_file = argv[2];
+    char *output_file = argv[2];
 
+    int executionsNumber = atoi(argv[3]);
     // Get number os jobs and number of machines from first line
     int number_of_jobs = 0, number_of_machines = 0;
     read_file_first_line(file_pointer, &number_of_jobs, &number_of_machines);
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
     initialize_output_time(output_time, number_of_jobs, jobs);
 
     // Shedule jobs
-    schedule_jobs(jobs, number_of_jobs, number_of_machines, output_time, output_file);
+    schedule_jobs(jobs, number_of_jobs, number_of_machines, output_time, output_file, executionsNumber);
 
     fclose(file_pointer);
     return EXIT_SUCCESS;

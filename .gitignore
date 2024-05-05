@@ -4,8 +4,8 @@ tmp/*
 
 !tmp/.gitkeep
 
-output_file/parallel/*
-!output_file/parallel/*.jss
-output_file/sequencial/*
-!output_file/sequencial/*.jss
+output_files/parallel/*
+!output_files/parallel/.gitkeep
+output_files/sequencial/*
+!output_files/sequencial/.gitkeep
 

@@ -46,11 +46,14 @@ buildP:
 	gcc -lpthread -o tmp/parallel src/parallel/main.c
 
 runS-%:
-	make buildS && ./tmp/sequencial input_files/$*.jss output_files/sequencial/$*.jss
+	make buildS && ./tmp/sequencial input_files/$*.jss output_files/sequencial/$*.jss $(executions)
+
+executions ?= 1
 
 runP-%:
-	make buildP && ./tmp/parallel input_files/$*.jss output_files/parallel/$*.jss $(threads)
+	make buildP && ./tmp/parallel input_files/$*.jss output_files/parallel/$*.jss $(threads) $(executions)
 
+executions ?= 1
 buildValidate:
 	gcc -o tmp/output_validator src/output_validator/main.c
 

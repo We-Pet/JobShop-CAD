@@ -46,92 +46,106 @@ void create_thread(int thread_index, pthread_t *threads, struct Thread_Args *thr
     pthread_create(&threads[thread_index], NULL, job_function, (void *)&thread_args[thread_index]);
 }
 
-void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads, char *output_file)
+void schedule_jobs(const struct Job *jobs, int number_of_jobs, int number_of_machines, int num_threads, char *output_file, int executionsNumber)
 {
-    int machines[number_of_machines];
-    int job_completion_times[number_of_jobs];
-
-    pthread_mutex_t mutexes_machines[number_of_machines];
-
-    memset(machines, 0, sizeof(machines));
-    memset(job_completion_times, 0, sizeof(job_completion_times));
-
-    initialize_mutexes(mutexes_machines, number_of_machines);
-
-    struct Thread_Args thread_args[number_of_jobs];
-    struct Output_time output_time[number_of_jobs];
-
-    initialize_output_time(output_time, number_of_jobs, jobs);
-
-    // if num_threads is greater than number_of_jobs, only create as many threads as there are jobs.
-    int limit_iterations = (num_threads > number_of_jobs) ? number_of_jobs : num_threads;
-    pthread_t threads[limit_iterations];
-
-    clock_t time_before = clock();
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    for (int i = 0; i < limit_iterations; i++)
+    double elapsed = 0;
+    int best_make_span = INT_MAX;
+    for (int currExecutions = 0; currExecutions < executionsNumber; currExecutions++)
     {
-        create_thread(i, threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
-    }
-    int current_job_index = limit_iterations;
-    if (current_job_index < number_of_jobs)
-    {
+
+        int machines[number_of_machines];
+        int job_completion_times[number_of_jobs];
+
+        pthread_mutex_t mutexes_machines[number_of_machines];
+
+        memset(machines, 0, sizeof(machines));
+        memset(job_completion_times, 0, sizeof(job_completion_times));
+
+        initialize_mutexes(mutexes_machines, number_of_machines);
+
+        struct Thread_Args thread_args[number_of_jobs];
+        struct Output_time output_time[number_of_jobs];
+
+        initialize_output_time(output_time, number_of_jobs, jobs);
+
+        // if num_threads is greater than number_of_jobs, only create as many threads as there are jobs.
+        int limit_iterations = (num_threads > number_of_jobs) ? number_of_jobs : num_threads;
+        pthread_t threads[limit_iterations];
+
+        clock_t time_before = clock();
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        for (int i = 0; i < limit_iterations; i++)
+        {
+            create_thread(i, threads, thread_args, jobs, num_threads, i, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
+        }
+        int current_job_index = limit_iterations;
+        if (current_job_index < number_of_jobs)
+        {
+            for (int i = 0; i < num_threads; i++)
+                pthread_join(threads[i], NULL);
+
+            int threads_index = 0;
+            while (current_job_index < number_of_jobs)
+            {
+                create_thread(threads_index, threads, thread_args, jobs, num_threads, current_job_index, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
+                threads_index++;
+                current_job_index++;
+                if (threads_index == limit_iterations)
+                {
+                    for (int i = 0; i < num_threads; i++)
+                        pthread_join(threads[i], NULL);
+                    threads_index = 0;
+                }
+            }
+        }
+
         for (int i = 0; i < num_threads; i++)
             pthread_join(threads[i], NULL);
 
-        int threads_index = 0;
-        while (current_job_index < number_of_jobs)
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        clock_t time_after = clock();
+
+        pthread_mutex_destroy(mutexes_machines);
+
+        int make_span = 0;
+        for (int i = 0; i < number_of_jobs; i++)
         {
-            create_thread(threads_index, threads, thread_args, jobs, num_threads, current_job_index, output_time, job_completion_times, mutexes_machines, machines, number_of_jobs);
-            threads_index++;
-            current_job_index++;
-            if (threads_index == limit_iterations)
+            make_span = (job_completion_times[i] > make_span) ? job_completion_times[i] : make_span;
+        }
+
+        if (make_span < best_make_span)
+        {
+            FILE *file_ptr = fopen(output_file, "w+");
+            if (!file_ptr)
             {
-                for (int i = 0; i < num_threads; i++)
-                    pthread_join(threads[i], NULL);
-                threads_index = 0;
+                perror("Error opening file");
+                return;
             }
+            best_make_span = make_span;
+            for (int i = 0; i < number_of_jobs; i++)
+            {
+                for (int j = 0; j < jobs[i].total_operations; j++)
+                {
+                    fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
+                }
+                fprintf(file_ptr, "\n");
+            }
+            fclose(file_ptr);
         }
-    }
+        double time_in_ms;
 
-    for (int i = 0; i < num_threads; i++)
-        pthread_join(threads[i], NULL);
-    clock_gettime(CLOCK_MONOTONIC, &finish);
-    clock_t time_after = clock();
-
-    pthread_mutex_destroy(mutexes_machines);
-
-    FILE *file_ptr = fopen(output_file, "w+");
-    if (!file_ptr)
-    {
-        perror("Error opening file");
-        return;
-    }
-
-    int make_span = 0;
-    for (int i = 0; i < number_of_jobs; i++)
-    {
-        make_span = (job_completion_times[i] > make_span) ? job_completion_times[i] : make_span;
-        for (int j = 0; j < jobs[i].total_operations; j++)
-        {
-            fprintf(file_ptr, "%d ", output_time[i].start_time_operations[j]);
-        }
-        fprintf(file_ptr, "\n");
-    }
-    fclose(file_ptr);
-
-    printf("Makespan: %d\n", make_span);
-    double time_in_ms;
-    double elapsed;
-    elapsed = (finish.tv_sec - start.tv_sec);
-    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+        double current_elapsed;
+        current_elapsed = (finish.tv_sec - start.tv_sec);
+        current_elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
 // Windows CLOCKS_PER_SEC is different from Linux CLOCKS_PER_SEC
 #ifdef _WIN32
-    time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
+        time_in_ms = (double)(time_after - time_before) * 10.0 / CLOCKS_PER_SEC;
 #else
-    time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
+        time_in_ms = (double)(time_after - time_before) * 1000.0 / CLOCKS_PER_SEC;
 #endif
+        elapsed += current_elapsed;
+    }
 
-    printf("Time: %.5f\n", time_in_ms);
-    printf("Elapsed Time: %.5f\n", elapsed);
+    printf("Makespan: %d\n", best_make_span);
+    printf("Elapsed Time: %.5f\n", elapsed / executionsNumber);
 }
